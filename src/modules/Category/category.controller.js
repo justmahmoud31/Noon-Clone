@@ -1,7 +1,7 @@
 import slugify from 'slugify';
 import { Category } from '../../../database/models/category.js';
-
-const addCategory = async (req, res) => {
+import { AppError } from '../../utils/AppError.js';
+const addCategory = async (req, res, next) => {
     try {
         const { name } = req.body;
         const slug = slugify(name);
@@ -13,13 +13,10 @@ const addCategory = async (req, res) => {
             "data": category
         });
     } catch (err) {
-        res.status(500).json({
-            "Status": "Error",
-            "Message": err.message
-        });
+        next(new AppError(`Error : ${err.message}`, 500))
     }
 };
-const getAllCategories = async (req, res) => {
+const getAllCategories = async (req, res,next) => {
     try {
         const allCategories = await Category.find();
         res.status(200).json({
@@ -28,20 +25,14 @@ const getAllCategories = async (req, res) => {
             "data": allCategories
         });
     } catch (err) {
-        res.status(500).json({
-            "Status": "Error",
-            "Message": err.message
-        });
+        next(new AppError(`Error : ${err.message}`, 500))
     }
 };
-const getOneCategory = async (req, res) => {
+const getOneCategory = async (req, res,next) => {
     try {
         const oneCategory = await Category.findById(req.params.id);
         if (!oneCategory) {
-            return res.status(404).json({
-                "Status": "Error",
-                "Message": "Category not found"
-            });
+            next(new AppError('Category Not Found', 404))
         }
         res.status(200).json({
             "Status": "Success",
@@ -49,20 +40,14 @@ const getOneCategory = async (req, res) => {
             "data": oneCategory
         });
     } catch (err) {
-        res.status(500).json({
-            "Status": "Error",
-            "Message": err.message
-        });
+        next(new AppError(`Error : ${err.message}`, 500));
     }
 };
-const editCategory = async (req, res) => {
+const editCategory = async (req, res,next) => {
     try {
         const oneCategory = await Category.findById(req.params.id);
-        if (oneCategory==null) {
-            return res.status(404).json({
-                "Status": "Error",
-                "Message": "Category not found"
-            });
+        if (oneCategory == null) {
+            next(new AppError('Category Not Found', 404))
         }
         const { name } = req.body;
         req.body.slug = slugify(name);
@@ -73,31 +58,22 @@ const editCategory = async (req, res) => {
             "data": category
         });
     } catch (err) {
-        res.status(500).json({
-            "Status": "Error",
-            "Message": err.message
-        });
+        next(new AppError(`Error : ${err.message}`, 500))
     }
 }
-const deleteCategory = async (req,res)=>{
-    try{
+const deleteCategory = async (req, res,next) => {
+    try {
         const oneCategory = await Category.findById(req.params.id);
         if (!oneCategory) {
-            return res.status(404).json({
-                "Status": "Error",
-                "Message": "Category not found"
-            });
+            next(new AppError('Category Not Found', 404))
         }
         await Category.findByIdAndDelete(req.params.id);
         res.status(200).json({
             "Status": "Success",
             "Message": "Category Deleted",
         });
-    }catch(err){
-        res.status(500).json({
-            "Status": "Error",
-            "Message": err.message
-        });
+    } catch (err) {
+        next(new AppError(`Error : ${err.message}`, 500))
     }
 }
-export default { addCategory, getAllCategories, getOneCategory,editCategory,deleteCategory };
+export default { addCategory, getAllCategories, getOneCategory, editCategory, deleteCategory };
