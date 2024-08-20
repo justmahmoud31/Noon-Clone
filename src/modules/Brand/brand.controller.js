@@ -69,6 +69,10 @@ const deleteBrand = async (req, res, next) => {
             next(new AppError('Brand Not Found', 404))
         }
         await Brand.findByIdAndDelete(req.params.id);
+        res.status(201).json({
+            "Status": "Success",
+            "Message": "Brand Deleted",
+        });
     } catch (err) {
         next(new AppError(`Error: ${err.message}`, 500));
     }
