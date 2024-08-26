@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import { configDotenv } from 'dotenv';
+configDotenv();
 const schema = new mongoose.Schema({
     name: {
         type: String,
@@ -15,4 +17,7 @@ const schema = new mongoose.Schema({
     },
     image: String
 }, { timestamps: true, versionKey: false });
+schema.post('init', function (doc) {
+    doc.image = process.env.BASEURL + '/uploads/categories/' + doc.image;
+})
 export const Category = mongoose.model('Category', schema);

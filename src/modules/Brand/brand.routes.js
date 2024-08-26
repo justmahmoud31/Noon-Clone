@@ -1,9 +1,10 @@
 import { Router } from "express";
 import brandController from "./brand.controller.js";
+import { singleFile } from "../../File Upload/fileupload.js";
 const brandRouter = Router();
 brandRouter.get('/',brandController.getAllBrands);
 brandRouter.get('/getonebrand/:id',brandController.getOneBrand);
-brandRouter.post('/addbrand',brandController.addBrand);
-brandRouter.put('/editbrand/:id',brandController.editBrand);
+brandRouter.post('/addbrand',singleFile('logo','brands'),brandController.addBrand);
+brandRouter.put('/editbrand/:id',singleFile('logo','brands'),brandController.editBrand);
 brandRouter.delete('/deletebrand/:id',brandController.deleteBrand);
 export default brandRouter;
