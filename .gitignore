@@ -1,2 +1,5 @@
 node_modules
 .env
+uploads/brands
+uploads/products
+uploads/categoreis

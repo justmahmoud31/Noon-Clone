@@ -9,7 +9,6 @@ const addBrand = async (req, res, next) => {
         req.body.logo = req.file.filename;
         const brand = new Brand({ ...req.body, slug });
         await brand.save();
-
         res.status(201).json({
             status: "Success",
             message: "Brand added",
