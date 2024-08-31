@@ -1,5 +1,5 @@
 import slugify from "slugify";
-import { Product} from "../../../database/models/Products.js";
+import { Product } from "../../../database/models/Products.js";
 import { AppError } from '../../utils/AppError.js';
 import fs from 'fs';
 import path from 'path';
@@ -55,8 +55,8 @@ const getOneProduct = async (req, res, next) => {
 }
 const getBrandProduct = async (req, res, next) => {
     try {
-        const {id}= req.params;
-        const brandProduct = await Product.find({ brand: id}); 
+        const { id } = req.params;
+        const brandProduct = await Product.find({ brand: id });
         if (brandProduct.length === 0) {
             return next(new AppError("There are no products for this brand", 404));
         }
@@ -71,8 +71,8 @@ const getBrandProduct = async (req, res, next) => {
 }
 const getCategoryProducts = async (req, res, next) => {
     try {
-        const {id}= req.params;
-        const categoryproducts = await Product.find({ category: id});
+        const { id } = req.params;
+        const categoryproducts = await Product.find({ category: id });
         if (!categoryproducts) {
             return next(new AppError("There are no products for this Category", 404));
         }
@@ -142,31 +142,31 @@ const deleteProduct = async (req, res, next) => {
         if (!oneProduct) {
             return next(new AppError('There no such a Product', 404));
         }
-            if (oneProduct.imageCover) {
-                const oldImageCoverFilename = oneProduct.imageCover.split('/').pop();
-                const oldImageCoverPath = path.join('uploads/products', oldImageCoverFilename);
-                if (fs.existsSync(oldImageCoverPath)) {
-                    fs.unlink(oldImageCoverPath, (err) => {
-                        if (err) {
-                            console.error(`Error deleting old image cover: ${err.message}`);
-                        }
-                    });
-                }
-            }   
-            if (oneProduct.images && oneProduct.images.length > 0) {
-                oneProduct.images.forEach(image => {
-                    if (image) {
-                        const oldImageFilename = image.split('/').pop();
-                        const oldImagePath = path.join('uploads/products', oldImageFilename);
-                        if (fs.existsSync(oldImagePath)) {
-                            fs.unlink(oldImagePath, (err) => {
-                                if (err) {
-                                    console.error(`Error deleting old image: ${err.message}`);
-                                }
-                            });
-                        }
+        if (oneProduct.imageCover) {
+            const oldImageCoverFilename = oneProduct.imageCover.split('/').pop();
+            const oldImageCoverPath = path.join('uploads/products', oldImageCoverFilename);
+            if (fs.existsSync(oldImageCoverPath)) {
+                fs.unlink(oldImageCoverPath, (err) => {
+                    if (err) {
+                        console.error(`Error deleting old image cover: ${err.message}`);
                     }
                 });
+            }
+        }
+        if (oneProduct.images && oneProduct.images.length > 0) {
+            oneProduct.images.forEach(image => {
+                if (image) {
+                    const oldImageFilename = image.split('/').pop();
+                    const oldImagePath = path.join('uploads/products', oldImageFilename);
+                    if (fs.existsSync(oldImagePath)) {
+                        fs.unlink(oldImagePath, (err) => {
+                            if (err) {
+                                console.error(`Error deleting old image: ${err.message}`);
+                            }
+                        });
+                    }
+                }
+            });
         }
         await Product.findByIdAndDelete(req.params.id);
         res.status(200).json({
