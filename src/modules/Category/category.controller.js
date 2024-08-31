@@ -20,7 +20,13 @@ const addCategory = async (req, res, next) => {
 };
 const getAllCategories = async (req, res, next) => {
     try {
-        const allCategories = await Category.find();
+        let pageNumber = req.query.page * 1 || 1;
+        if (req.query.page < 1) {
+            pageNumber = 1
+        }
+        const limit = 5;
+        let skip = (pageNumber - 1) * limit;
+        const allCategories = await Category.find().skip(skip).limit(limit);
         res.status(200).json({
             "Status": "Success",
             "Message": "All Categories retrieved",

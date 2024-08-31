@@ -28,10 +28,17 @@ const addProduct = async (req, res, next) => {
 
 const getAllProducts = async (req, res, next) => {
     try {
-        const allProducts = await Product.find();
+        let pageNumber = req.query.page * 1 || 1;
+        if (req.query.page < 1) {
+            pageNumber = 1
+        }
+        const limit = 5;
+        let skip = (pageNumber - 1) * limit;
+        const allProducts = await Product.find().skip(skip).limit(limit);
         res.status(200).json({
             "Status": "Success",
             "Message": "All Products",
+            "pageNumber": pageNumber,
             "data": allProducts
         });
     } catch (err) {

@@ -20,7 +20,13 @@ const addBrand = async (req, res, next) => {
 }
 const getAllBrands = async (req, res, next) => {
     try {
-        const AllBrands = await Brand.find();
+        let pageNumber = req.query.page * 1 || 1;
+        if (req.query.page < 1) {
+            pageNumber = 1
+        }
+        const limit = 5;
+        let skip = (pageNumber - 1) * limit;
+        const AllBrands = await Brand.find().skip(skip).limit(limit);
         res.status(200).json({
             "Status": "Success",
             "Message": "All Brands retrieved",
