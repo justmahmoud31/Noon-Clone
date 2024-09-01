@@ -3,6 +3,7 @@ import { Product } from "../../../database/models/Products.js";
 import { AppError } from '../../utils/AppError.js';
 import fs from 'fs';
 import path from 'path';
+import mongoose from "mongoose";
 const addProduct = async (req, res, next) => {
     try {
         const { title } = req.body;
@@ -41,7 +42,12 @@ const getAllProducts = async (req, res, next) => {
         searchQuery = JSON.parse(searchQuery);
         let deletedwords = ['page', 'sort', 'fields', 'search']
         deletedwords.forEach(word => delete searchQuery[word])
-        const allProducts = await Product.find(searchQuery).skip(skip).limit(limit);
+        let mongooseQuery =  Product.find(searchQuery).skip(skip).limit(limit);
+        if(req.query.sort){
+            let sortBy = req.query.sort.split(',').join(' ')
+            mongooseQuery = mongooseQuery.sort(sortBy)
+        }
+        let allProducts = await mongooseQuery
         res.status(200).json({
             "Status": "Success",
             "Message": "All Products",
