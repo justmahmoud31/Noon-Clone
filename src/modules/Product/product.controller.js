@@ -25,7 +25,6 @@ const addProduct = async (req, res, next) => {
         next(new AppError(`Error: ${err.message}`, 500));
     }
 };
-
 const getAllProducts = async (req, res, next) => {
     try {
         let pageNumber = req.query.page * 1 || 1;
@@ -34,7 +33,15 @@ const getAllProducts = async (req, res, next) => {
         }
         const limit = 5;
         let skip = (pageNumber - 1) * limit;
-        const allProducts = await Product.find().skip(skip).limit(limit);
+        let searchQuery = structuredClone(req.query);
+        searchQuery = JSON.stringify(searchQuery);
+        searchQuery = searchQuery.replace(/(gt|gte|lt|lte)/g, (value) => {
+            return "$" + value;
+        });
+        searchQuery = JSON.parse(searchQuery);
+        let deletedwords = ['page', 'sort', 'fields', 'search']
+        deletedwords.forEach(word => delete searchQuery[word])
+        const allProducts = await Product.find(searchQuery).skip(skip).limit(limit);
         res.status(200).json({
             "Status": "Success",
             "Message": "All Products",
@@ -98,8 +105,10 @@ const editProduct = async (req, res, next) => {
         if (!oneProduct) {
             return next(new AppError('There is no such product', 404));
         }
-        const { title } = req.body;
-        const slug = slugify(title);
+        const updatedData = { ...req.body };
+        if (req.body.title) {
+            updatedData.slug = slugify(req.body.title);
+        }
         if (req.files.imageCover) {
             if (oneProduct.imageCover) {
                 const oldImageCoverFilename = oneProduct.imageCover.split('/').pop();
@@ -112,7 +121,7 @@ const editProduct = async (req, res, next) => {
                     });
                 }
             }
-            req.body.imageCover = req.files.imageCover[0].filename;
+            updatedData.imageCover = req.files.imageCover[0].filename;
         }
         if (req.files.images) {
             if (oneProduct.images && oneProduct.images.length > 0) {
@@ -130,9 +139,9 @@ const editProduct = async (req, res, next) => {
                     }
                 });
             }
-            req.body.images = req.files.images.map(img => img.filename);
+            updatedData.images = req.files.images.map(img => img.filename);
         }
-        const product = await Product.findByIdAndUpdate(req.params.id, { ...req.body, slug }, { new: true });
+        const product = await Product.findByIdAndUpdate(req.params.id, updatedData, { new: true });
         await product.save();
         res.status(200).json({
             "Status": "Success",
@@ -142,7 +151,9 @@ const editProduct = async (req, res, next) => {
     } catch (err) {
         next(new AppError(`Error: ${err.message}`, 500));
     }
-}
+};
+
+
 const deleteProduct = async (req, res, next) => {
     try {
         const oneProduct = await Product.findById(req.params.id);
