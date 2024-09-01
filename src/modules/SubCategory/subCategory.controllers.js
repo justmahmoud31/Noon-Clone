@@ -2,6 +2,7 @@ import slugify from "slugify";
 import { Category } from "../../../database/models/category.js";
 import { SubCategory } from "../../../database/models/subCategory.js";
 import { AppError } from "../../utils/AppError.js";
+import ApiFeature from "../../utils/apiFeatures.js";
 const addSubcategory = async (req, res, next) => {
     try {
         const { name } = req.body;
@@ -19,9 +20,12 @@ const addSubcategory = async (req, res, next) => {
 }
 const getAllSubCategories = async (req, res, next) => {
     try {
-        const AllSubcategories = await SubCategory.find();
+        let apifeature = new ApiFeature(SubCategory.find(), req.query)
+            .pagination(2).fields().sort().search().filter()
+        const AllSubcategories = await apifeature.mongooseQuery;
         res.status(200).json({
             "Status": "Success",
+            "pageNumber": apifeature.pageNumber,
             "Message": "All Categories retrieved",
             "data": AllSubcategories
         });
@@ -70,7 +74,7 @@ const editSubCategory = async (req, res, next) => {
         const { name } = req.body;
         req.body.slug = slugify(name);
         let subcategory = await SubCategory.
-        findByIdAndUpdate(req.params.id, req.body, { new: true })
+            findByIdAndUpdate(req.params.id, req.body, { new: true })
         res.status(201).json({
             "Status": "Success",
             "Message": "SubCategory Updated",

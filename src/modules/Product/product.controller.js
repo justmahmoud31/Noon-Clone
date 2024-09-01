@@ -3,7 +3,7 @@ import { Product } from "../../../database/models/Products.js";
 import { AppError } from '../../utils/AppError.js';
 import fs from 'fs';
 import path from 'path';
-import mongoose from "mongoose";
+import ApiFeature from '../../utils/apiFeatures.js';
 const addProduct = async (req, res, next) => {
     try {
         const { title } = req.body;
@@ -28,30 +28,13 @@ const addProduct = async (req, res, next) => {
 };
 const getAllProducts = async (req, res, next) => {
     try {
-        let pageNumber = req.query.page * 1 || 1;
-        if (req.query.page < 1) {
-            pageNumber = 1
-        }
-        const limit = 5;
-        let skip = (pageNumber - 1) * limit;
-        let searchQuery = structuredClone(req.query);
-        searchQuery = JSON.stringify(searchQuery);
-        searchQuery = searchQuery.replace(/(gt|gte|lt|lte)/g, (value) => {
-            return "$" + value;
-        });
-        searchQuery = JSON.parse(searchQuery);
-        let deletedwords = ['page', 'sort', 'fields', 'search']
-        deletedwords.forEach(word => delete searchQuery[word])
-        let mongooseQuery =  Product.find(searchQuery).skip(skip).limit(limit);
-        if(req.query.sort){
-            let sortBy = req.query.sort.split(',').join(' ')
-            mongooseQuery = mongooseQuery.sort(sortBy)
-        }
-        let allProducts = await mongooseQuery
+        let apifeature = new ApiFeature(Product.find(), req.query)
+            .pagination(2).fields().sort().search().filter()
+        let allProducts = await apifeature.mongooseQuery;
         res.status(200).json({
             "Status": "Success",
             "Message": "All Products",
-            "pageNumber": pageNumber,
+            "pageNumber": apifeature.pageNumber,
             "data": allProducts
         });
     } catch (err) {

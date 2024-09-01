@@ -2,6 +2,7 @@ import slugify from 'slugify';
 import { Category } from '../../../database/models/category.js';
 import { AppError } from '../../utils/AppError.js';
 import * as fs from 'fs';
+import ApiFeature from '../../utils/apiFeatures.js';
 const addCategory = async (req, res, next) => {
     try {
         const { name } = req.body;
@@ -20,16 +21,13 @@ const addCategory = async (req, res, next) => {
 };
 const getAllCategories = async (req, res, next) => {
     try {
-        let pageNumber = req.query.page * 1 || 1;
-        if (req.query.page < 1) {
-            pageNumber = 1
-        }
-        const limit = 5;
-        let skip = (pageNumber - 1) * limit;
-        const allCategories = await Category.find().skip(skip).limit(limit);
+        let apifeature = new ApiFeature(Category.find(), req.query)
+        .pagination(2).fields().sort().search().filter()
+        const allCategories = await apifeature.mongooseQuery;
         res.status(200).json({
             "Status": "Success",
             "Message": "All Categories retrieved",
+            "pageNumber" : apifeature.pageNumber,
             "data": allCategories
         });
     } catch (err) {
