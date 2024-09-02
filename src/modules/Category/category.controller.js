@@ -2,7 +2,7 @@ import slugify from 'slugify';
 import { Category } from '../../../database/models/category.js';
 import { AppError } from '../../utils/AppError.js';
 import * as fs from 'fs';
-import ApiFeature from '../../utils/apiFeatures.js';
+import ApiFeature from 'api-features';
 const addCategory = async (req, res, next) => {
     try {
         const { name } = req.body;
@@ -22,7 +22,7 @@ const addCategory = async (req, res, next) => {
 const getAllCategories = async (req, res, next) => {
     try {
         let apifeature = new ApiFeature(Category.find(), req.query)
-        .pagination(2).fields().sort().search().filter()
+        .pagination(2).fields().sort().search(['name']).filter()
         const allCategories = await apifeature.mongooseQuery;
         res.status(200).json({
             "Status": "Success",

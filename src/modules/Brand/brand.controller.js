@@ -2,6 +2,7 @@ import slugify from "slugify";
 import { AppError } from "../../utils/AppError.js";
 import { Brand } from "../../../database/models/Brand.js";
 import * as fs from 'fs';
+import ApiFeature from "api-features";
 const addBrand = async (req, res, next) => {
     try {
         const { name } = req.body;
@@ -20,15 +21,13 @@ const addBrand = async (req, res, next) => {
 }
 const getAllBrands = async (req, res, next) => {
     try {
-        let pageNumber = req.query.page * 1 || 1;
-        if (req.query.page < 1) {
-            pageNumber = 1
-        }
-        const limit = 5;
-        let skip = (pageNumber - 1) * limit;
-        const AllBrands = await Brand.find().skip(skip).limit(limit);
+        let fields=['name'];
+        let apifeature = new ApiFeature(Brand.find(), req.query)
+        .pagination(3).fields().sort().search(fields).filter()
+        const AllBrands =await apifeature.mongooseQuery;
         res.status(200).json({
             "Status": "Success",
+            "pageNumber" :apifeature.pageNumber,
             "Message": "All Brands retrieved",
             "data": AllBrands
         });

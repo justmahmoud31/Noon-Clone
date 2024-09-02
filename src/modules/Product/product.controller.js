@@ -3,7 +3,7 @@ import { Product } from "../../../database/models/Products.js";
 import { AppError } from '../../utils/AppError.js';
 import fs from 'fs';
 import path from 'path';
-import ApiFeature from '../../utils/apiFeatures.js';
+import ApiFeature from "api-features";
 const addProduct = async (req, res, next) => {
     try {
         const { title } = req.body;
@@ -28,8 +28,9 @@ const addProduct = async (req, res, next) => {
 };
 const getAllProducts = async (req, res, next) => {
     try {
+        let fields = ['title','description'];
         let apifeature = new ApiFeature(Product.find(), req.query)
-            .pagination(2).fields().sort().search().filter()
+            .pagination(10).fields().sort().search(fields).filter()
         let allProducts = await apifeature.mongooseQuery;
         res.status(200).json({
             "Status": "Success",
