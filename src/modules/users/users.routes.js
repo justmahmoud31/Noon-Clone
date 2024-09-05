@@ -1,0 +1,13 @@
+import { Router } from "express";
+import userController from "./users.controllers.js"; 
+import { mixedFiles } from "../../File Upload/fileupload.js"; 
+import { isValid } from "../../middlewares/Validation.js";
+import userSchema from "./users.validation.js"; 
+import { checkMail } from "../../middlewares/checkMail.js";
+const userRouter = Router();
+userRouter.get('/', userController.getAllUsers); 
+userRouter.get('/getuser/:id', userController.getOneUser); 
+userRouter.post('/adduser',checkMail,mixedFiles([{ name: 'image', maxCount: 1 }],'users'), isValid(userSchema), userController.addUser); 
+userRouter.put('/edituser/:id', mixedFiles([{ name: 'image', maxCount: 1 }], 'users'), userController.editUser); 
+userRouter.delete('/deleteuser/:id', userController.deleteUser);    
+export default userRouter;

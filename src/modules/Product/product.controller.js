@@ -142,8 +142,6 @@ const editProduct = async (req, res, next) => {
         next(new AppError(`Error: ${err.message}`, 500));
     }
 };
-
-
 const deleteProduct = async (req, res, next) => {
     try {
         const oneProduct = await Product.findById(req.params.id);
