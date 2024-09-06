@@ -8,7 +8,6 @@ const schema = new mongoose.Schema({
     slug: {
         type: String,
         lowercase: true,
-        required: true
     },
     email: {
         type: String,
@@ -31,12 +30,16 @@ const schema = new mongoose.Schema({
     createdBy: {
         type: Types.ObjectId,
         ref: "User"
-    }
+    },
+    passwordChangedAt: Date
 }, { timestamps: true, versionKey: false });
 schema.pre('save', function () {
     this.password = bcrypt.hashSync(this.password, 8)
 })
 schema.pre('findOneAndUpdate', function () {
     if (this._update.password) bcrypt.hashSync(this._update.password, 8)
+})
+schema.pre('findByIdAndUpdate', function () {
+    this._update.password = bcrypt.hashSync(this._update.password, 8)
 })
 export const User = mongoose.model('User', schema);

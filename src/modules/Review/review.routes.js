@@ -1,0 +1,10 @@
+import { Router } from "express";
+import reviewController from "./review.controller.js";
+import { accessKey, protectedRoutes } from "../auth/auth.controllers.js";
+const reviewRouter = Router();
+reviewRouter.get('/',reviewController.getAllReviews);
+reviewRouter.get('/getonereview/:id',reviewController.getOneReview);
+reviewRouter.post('/addreview',protectedRoutes,accessKey('user'),reviewController.addReview);
+reviewRouter.put('/editreview/:id',protectedRoutes,accessKey('admin','user'),reviewController.editReview);
+reviewRouter.delete('/deletereview/:id',reviewController.deleteReview);
+export default  reviewRouter;
