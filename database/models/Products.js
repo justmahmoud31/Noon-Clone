@@ -59,7 +59,15 @@ const schema = new mongoose.Schema({
         type: Types.ObjectId,
         ref: "User"
     }
-}, { timestamps: true, versionKey: false });
+}, { timestamps: true, versionKey: false, toJSON: { virtuals: true },id:false });
+schema.virtual('reviews', {
+    ref: 'Review',
+    localField: '_id',
+    foreignField: 'product',
+  });
+  schema.pre('findOne',function(){
+    this.populate('reviews')
+})
 schema.post('init', function (doc) {
     doc.imageCover = process.env.BASEURL + '/uploads/products/' + doc.imageCover;
     if (Array.isArray(doc.images)) {
