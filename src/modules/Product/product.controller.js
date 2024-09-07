@@ -29,9 +29,13 @@ const addProduct = async (req, res, next) => {
 const getAllProducts = async (req, res, next) => {
     try {
         let fields = ['title','description'];
-        let apifeature = new ApiFeature(Product.find(), req.query)
-            .pagination(10).fields().sort().search(fields).filter()
-        let allProducts = await apifeature.mongooseQuery;
+        let apifeature = new ApiFeature(Product.find(), req.query,'no-sql')
+            .pagination(2)
+            .fields()
+            .sort()
+            .search(fields)
+            .filter()
+        let allProducts = await apifeature.apply();
         res.status(200).json({
             "Status": "Success",
             "Message": "All Products",
