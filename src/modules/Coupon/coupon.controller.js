@@ -1,8 +1,6 @@
 import { Copoun } from "../../../database/models/copouns.js";
 import { AppError } from "../../utils/AppError.js";
 import ApiFeature from "api-features";
-
-// Add a Coupon
 const addCoupon = async (req, res, next) => {
     try {
         const { code, discount, expires } = req.body;
@@ -17,8 +15,6 @@ const addCoupon = async (req, res, next) => {
         next(new AppError(`Error: ${err.message}`, 500));
     }
 };
-
-// Get all Coupons
 const getAllCoupons = async (req, res, next) => {
     try {
         let fields = ['code'];
@@ -39,8 +35,6 @@ const getAllCoupons = async (req, res, next) => {
         next(new AppError(`Error: ${err.message}`, 500));
     }
 };
-
-// Get one Coupon by ID
 const getOneCoupon = async (req, res, next) => {
     try {
         const coupon = await Copoun.findById(req.params.id);
@@ -56,8 +50,6 @@ const getOneCoupon = async (req, res, next) => {
         next(new AppError(`Error: ${err.message}`, 500));
     }
 };
-
-// Edit Coupon
 const editCoupon = async (req, res, next) => {
     try {
         const coupon = await Copoun.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -73,8 +65,6 @@ const editCoupon = async (req, res, next) => {
         next(new AppError(`Error: ${err.message}`, 500));
     }
 };
-
-// Delete Coupon
 const deleteCoupon = async (req, res, next) => {
     try {
         const coupon = await Copoun.findByIdAndDelete(req.params.id);

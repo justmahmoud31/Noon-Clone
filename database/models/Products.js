@@ -59,13 +59,13 @@ const schema = new mongoose.Schema({
         type: Types.ObjectId,
         ref: "User"
     }
-}, { timestamps: true, versionKey: false, toJSON: { virtuals: true },id:false });
+}, { timestamps: true, versionKey: false, toJSON: { virtuals: true }, id: false });
 schema.virtual('reviews', {
     ref: 'Review',
     localField: '_id',
     foreignField: 'product',
-  });
-  schema.pre('findOne',function(){
+});
+schema.pre('findOne', function () {
     this.populate('reviews')
 })
 schema.post('init', function (doc) {
