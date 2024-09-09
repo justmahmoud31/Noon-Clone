@@ -1,12 +1,11 @@
+import bodyParser from 'body-parser';
+import cors from 'cors';
 import express from 'express';
-import { dbconn } from './database/dbconnection.js';
+import Stripe from 'stripe';
+import { catchError } from './src/middlewares/catchError.js';
+import { globalError } from './src/middlewares/globalError.js';
 import { bootstrap } from './src/modules/bootstrap.js';
 import { AppError } from './src/utils/AppError.js';
-import { globalError } from './src/middlewares/globalError.js';
-import cors from 'cors';
-import Stripe from 'stripe';
-import bodyParser from 'body-parser';
-import { catchError } from './src/middlewares/catchError.js';
 const app = express();
 const port = process.env.PORT || 3000;
 const stripe = new Stripe(process.env.STRIPE_KEY);
