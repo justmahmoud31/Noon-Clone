@@ -28,7 +28,7 @@ const getAllUsers = async (req, res, next) => {
             .sort()
             .search(fields)
             .filter();
-        let allUsers = await apifeature.mongooseQuery;
+        let allUsers = await apifeature.apply();
         res.status(200).json({
             Status: "Success",
             pageNumber: apifeature.pageNumber,

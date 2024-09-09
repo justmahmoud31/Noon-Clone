@@ -1,11 +1,11 @@
 {
   "name": "noon-clone",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +22,7 @@
     "mongoose": "^8.5.3",
     "multer": "^1.4.5-lts.1",
     "slugify": "^1.6.6",
+    "stripe": "^16.10.0",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
